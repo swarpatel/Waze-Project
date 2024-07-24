@@ -37,6 +37,8 @@ Waze data analytics team is still in the early stages of their user churn projec
 
 <img src="images/Pace.png" width="100" height="100" align=left>
 
+
+
 # **PACE stages**
 
 <img src="images/Plan.png" width="100" height="100" align=left>
