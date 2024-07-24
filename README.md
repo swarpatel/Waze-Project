@@ -32,10 +32,10 @@ Waze data analytics team is still in the early stages of their user churn projec
 
 
 
-# **Identify data types and compile summary information**
+# **Identify data types and compile summary information**  
 
 
-<img src="images/Pace.png" width="100" height="100" align=left>
+<img src="images/Pace.png" width="100" height="100" align=left>  
 
 
 
