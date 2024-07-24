@@ -39,7 +39,7 @@ Waze data analytics team is still in the early stages of their user churn projec
 
 # **PACE stages**
 
-<br/><br/><br/><br/>
+<br/><br/><br/>
 
 <img src="images/Plan.png" width="100" height="100" align=left>  
 
@@ -77,6 +77,8 @@ Waze data analytics team is still in the early stages of their user churn projec
 <img src="images/Analyze.png" width="100" height="100" align=left>
 
 ## **PACE: Analyze**
+
+<br/><br/><br/>
 
 ### **Task 2a. Imports and data loading**
 
