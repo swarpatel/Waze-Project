@@ -1020,7 +1020,7 @@ The ratio of iPhone users and Android users is consistent between the churned gr
 
 ## **PACE: Execute**
 
-Consider the questions in your PACE Strategy Document and those below to craft your response:
+</br>
 
 ### **Task 3. Conclusion**
 
