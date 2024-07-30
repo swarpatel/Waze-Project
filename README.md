@@ -994,8 +994,6 @@ The ratio of iPhone users and Android users is consistent between the churned gr
 
 ### **Conclusion**
 
-Recall that your supervisor, May Santer, asked you to share your findings with the data team in an executive summary. Consider the following questions as you prepare to write your summary. Think about key points you may want to share with the team, and what information is most relevant to the user churn project.
-
 **Questions:**
 
 1. Did the data contain any missing values? How many, and which variables were affected? Was there a pattern to the missing data?
