@@ -2,6 +2,8 @@
 
 Welcome to the Waze Project!
 
+#### Case Study:
+
 Waze data analytics team is still in the early stages of their user churn project. Previously, you were asked to complete a project proposal by your supervisor, May Santner. You have received notice that your project proposal has been approved and that your team has been given access to Waze's user data. To get clear insights, the user data must be inspected and prepared for the upcoming process of exploratory data analysis (EDA).
 
 # **Inspect and analyze data**
@@ -32,22 +34,10 @@ Waze data analytics team is still in the early stages of their user churn projec
 
 
 
-# **Identify data types and compile summary information**  
+# **Identify data types and compile summary information**
 
 
-<img src="images/Pace.png" width="100" height="100" align=left>  
-
-# **PACE stages**
-
-<br/><br/><br/>
-
-<img src="images/Plan.png" width="100" height="100" align=left>  
-
-## **PACE: Plan**  
-
-<br/>
-
-### **Task 1. Understand the situation**
+### **Understand the situation**
 
 #### How can you best prepare to understand and organize the provided driver data?
 
@@ -74,13 +64,7 @@ Waze data analytics team is still in the early stages of their user churn projec
 
     Dataset scrubbed for exploratory data analysis, visualizations, statistical model, regression analysis and/or machine learning model.
 
-<img src="images/Analyze.png" width="100" height="100" align=left>
-
-## **PACE: Analyze**
-
-<br/><br/><br/>
-
-### **Task 2a. Imports and data loading**
+### **Imports and data loading**
 
 
 
@@ -96,7 +80,7 @@ import numpy as np
 df = pd.read_csv('waze_dataset.csv')
 ```
 
-### **Task 2b. Summary information**
+### **Summary information**
 
 *Answering following questions:*
 
@@ -350,7 +334,7 @@ None of the variables in the first 10 observations have missing values. Note tha
 
 Yes, the dataset does have missing values. Specifically, the label column has 14,299 non-null values out of 14,999, indicating that there are `700` missing values in this column. All other columns have no missing values, with each having 14,999 non-null entries.
 
-### **Task 2c. Null values and summary statistics**
+### **Null values and summary statistics**
 
 Compare the summary statistics of the 700 rows that are missing labels with summary statistics of the rows that are not missing any values.
 
@@ -655,7 +639,7 @@ not_null_df.describe()
 
 `The slight differences in the mean and standard deviation values suggest that there might be some minor differences in behavior or engagement between the two populations, but overall, the statistics indicate that the populations are quite similar in terms of the metrics provided.`
 
-### **Task 2d. Null values - device counts**
+### **Null values - device counts**
 
 Next, check the two populations with respect to the `device` variable.
 
@@ -839,6 +823,7 @@ df['km_per_drive'] = df['driven_km_drives'] / df['drives']
 
 # Group by `label`, calculate the median, and isolate for km per drive
 median_km_per_drive = df.groupby('label').median(numeric_only=True)[['km_per_drive']]
+median_km_per_drive.reset_index(inplace=True, drop=False)
 median_km_per_drive
 ```
 
@@ -850,20 +835,19 @@ median_km_per_drive
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>km_per_drive</th>
-    </tr>
-    <tr>
       <th>label</th>
-      <th></th>
+      <th>km_per_drive</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th>churned</th>
+      <th>0</th>
+      <td>churned</td>
       <td>74.109416</td>
     </tr>
     <tr>
-      <th>retained</th>
+      <th>1</th>
+      <td>retained</td>
       <td>75.014702</td>
     </tr>
   </tbody>
@@ -883,6 +867,7 @@ df['km_per_driving_day'] = df['driven_km_drives'] / df['driving_days']
 
 # Group by `label`, calculate the median, and isolate for km per driving day
 median_km_per_driving_day = df.groupby('label').median(numeric_only=True)[['km_per_driving_day']]
+median_km_per_driving_day.reset_index(inplace=True, drop=False)
 median_km_per_driving_day
 ```
 
@@ -894,20 +879,19 @@ median_km_per_driving_day
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>km_per_driving_day</th>
-    </tr>
-    <tr>
       <th>label</th>
-      <th></th>
+      <th>km_per_driving_day</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th>churned</th>
+      <th>0</th>
+      <td>churned</td>
       <td>697.541999</td>
     </tr>
     <tr>
-      <th>retained</th>
+      <th>1</th>
+      <td>retained</td>
       <td>289.549333</td>
     </tr>
   </tbody>
@@ -925,6 +909,7 @@ df['drives_per_driving_day'] = df['drives'] / df['driving_days']
 
 # Group by `label`, calculate the median, and isolate for drives per driving day
 median_drives_per_driving_day = df.groupby('label').median(numeric_only=True)[['drives_per_driving_day']]
+median_drives_per_driving_day.reset_index(inplace=True, drop=False)
 median_drives_per_driving_day
 ```
 
@@ -936,20 +921,19 @@ median_drives_per_driving_day
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>drives_per_driving_day</th>
-    </tr>
-    <tr>
       <th>label</th>
-      <th></th>
+      <th>drives_per_driving_day</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th>churned</th>
+      <th>0</th>
+      <td>churned</td>
       <td>10.0000</td>
     </tr>
     <tr>
-      <th>retained</th>
+      <th>1</th>
+      <td>retained</td>
       <td>4.0625</td>
     </tr>
   </tbody>
@@ -1008,21 +992,7 @@ df.groupby('label')['device'].value_counts(normalize=True)
 
 The ratio of iPhone users and Android users is consistent between the churned group and the retained group, and those ratios are both consistent with the ratio found in the overall dataset.
 
-<img src="images/Construct.png" width="100" height="100" align=left>
-
-## **PACE: Construct**
-
-**Note**: The Construct stage does not apply to this workflow. The PACE framework can be adapted to fit the specific requirements of any project.
-
-
-
-<img src="images/Execute.png" width="100" height="100" align=left>
-
-## **PACE: Execute**
-
-</br>
-
-### **Task 3. Conclusion**
+### **Conclusion**
 
 Recall that your supervisor, May Santer, asked you to share your findings with the data team in an executive summary. Consider the following questions as you prepare to write your summary. Think about key points you may want to share with the team, and what information is most relevant to the user churn project.
 
