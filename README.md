@@ -1344,7 +1344,7 @@ piecharter('device')
 
 There are nearly **twice** as many iPhone users as Android users represented in this data.
 
-#### **label**
+#### `label`
 
 
 ```python
