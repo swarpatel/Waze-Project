@@ -1082,7 +1082,7 @@ def boxplotter(column_str):    # **kwargs = any keyword arguments
 
 **The number of occurrences of a user opening the app during the month**
 
-#### `sessions`
+#### **`sessions`**
 
 
 ```python
@@ -1112,7 +1112,7 @@ The `sessions` variable is a right-skewed distribution with half of the observat
 
 **An occurrence of driving at least 1 km during the month**
 
-#### `drives`
+#### **`drives`**
 
 
 ```python
@@ -1140,7 +1140,7 @@ histogrammer('drives')
 
 The `drives` information follows a distribution similar to the `sessions` variable. It is right-skewed, approximately log-normal, with a median of 48. However, some drivers had over 400 drives in the last month.
 
-#### `total_sessions`
+#### **`total_sessions`**
 
 
 ```python
@@ -1168,7 +1168,7 @@ histogrammer('total_sessions')
 
 The `total_sessions` data exhibits a right-skewed distribution, with a median of 159.6 sessions. This is noteworthy because if the median number of sessions in the last month was 56 and the median total sessions is approximately 160, it suggests that a significant portion of a user's estimated total drives may have occurred in the past month. This warrants further investigation in the future.
 
-#### `n_days_after_onboarding`
+#### **`n_days_after_onboarding`**
 
 
 ```python
