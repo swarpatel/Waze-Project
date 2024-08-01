@@ -1013,7 +1013,7 @@ Recall that your supervisor, May Santer, asked you to share your findings with t
 
 1. Did the data contain any missing values? How many, and which variables were affected? Was there a pattern to the missing data?
 
-> **`The dataset had 700 missing values in the label column. There was no noticeable pattern to these missing values.`**
+> `The dataset had 700 missing values in the label column. There was no noticeable pattern to these missing values.`
 
 2. What is a benefit of using the median value of a sample instead of the mean?
 
