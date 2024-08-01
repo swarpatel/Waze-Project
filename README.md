@@ -1200,7 +1200,7 @@ histogrammer('n_days_after_onboarding', median_text=False)
 The total user tenure (i.e., number of days since
 onboarding) is a uniform distribution with values ranging from near-zero to \~3,500 (\~9.5 years).
 
-#### `driven_km_drives`
+#### **`driven_km_drives`**
 
 
 ```python
@@ -1228,7 +1228,7 @@ histogrammer('driven_km_drives')
 
 The number of drives in the past month per user shows a right-skewed distribution, with half of the users driving less than 3,495 kilometers. As noted in the previous course analysis, users in this dataset drive extensively. Remarkably, the longest distance driven in a month exceeded half the Earth's circumference.
 
-#### `duration_minutes_drives`
+#### **`duration_minutes_drives`**
 
 
 ```python
@@ -1256,7 +1256,7 @@ histogrammer('duration_minutes_drives')
 
 The `duration_minutes_drives` variable has a heavily skewed right tail. Half of the users drove less than \~1,478 minutes (\~25 hours), but some users clocked over 250 hours over the month.
 
-#### `activity_days`
+#### **`activity_days`**
 
 
 ```python
@@ -1284,7 +1284,7 @@ histogrammer('activity_days')
 In the past month, users opened the app a median of 16 times. The box plot indicates a centered distribution, while the histogram shows an almost uniform distribution, with around 500 users opening the app on each count of days. Notably, approximately 250 users did not open the app at all, and about 250 users opened it every day of the month. 
 This distribution is significant because it does not reflect the `sessions` distribution, which one might expect to be closely related to `activity_days`.
 
-#### `driving_days`
+#### **`driving_days`**
 
 
 ```python
@@ -1328,7 +1328,7 @@ def piecharter(column_str, median_text=True, **kwargs):    # **kwargs = any keyw
 
 ```
 
-#### `device`
+#### **`device`**
 
 
 ```python
@@ -1344,7 +1344,7 @@ piecharter('device')
 
 There are nearly **twice** as many iPhone users as Android users represented in this data.
 
-#### `label`
+#### **`label`**
 
 
 ```python
