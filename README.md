@@ -1859,3 +1859,66 @@ Additionally, exploratory data analysis has shown that users who drive very long
 Your team is nearing the midpoint of their user churn project. So far, you’ve completed a project proposal, and used Python to explore and analyze Waze’s user data. You’ve also used Python to create data visualizations. The next step is to use statistical methods to analyze and interpret your data.
 
 You receive a new email from Sylvester Esperanza, your project manager. Sylvester tells your team about a new request from leadership: to analyze the relationship between mean amount of rides and device type. You also discover follow-up emails from three other team members: May Santner, Chidi Ga, and Harriet Hadzic. These emails discuss the details of the analysis. They would like a statistical analysis of ride data based on device type. In particular, leadership wants to know if there is a statistically significant difference in mean amount of rides between iPhone® users and Android™ users. A final email from Chidi includes your specific assignment: to conduct a two-sample hypothesis test (t-test) to analyze the difference in the mean amount of rides between iPhone users and Android users.
+
+# **Hypothesis testing**
+
+
+```python
+import scipy.stats as stats
+```
+
+In order to perform further analysis, we must turn each label into an integer.  The following code assigns a `1` for an `iPhone` user and a `2` for `Android`.  It assigns this label back to the variable `device_type`.
+
+
+```python
+# 1. Create `map_dictionary`
+map_dictionary = {'Android': 2, 'iPhone': 1}
+
+# 2. Create new `device_type` column
+df['device_type'] = df['device']
+
+# 3. Map the new column to the dictionary
+df['device_type'] = df['device_type'].map(map_dictionary)
+
+df['device_type'].head()
+```
+
+
+
+
+    0    2
+    1    1
+    2    2
+    3    1
+    4    2
+    Name: device_type, dtype: int64
+
+
+
+To see the relationship between device type and the number of drives, one approach is to look at the average number of drives for each device type.
+
+
+```python
+df.groupby('device_type')['drives'].mean()
+```
+
+
+
+
+    device_type
+    1    64.446340
+    2    63.353482
+    Name: drives, dtype: float64
+
+
+
+Given the averages, it seems that drivers using an iPhone to interact with the application have a higher average number of drives. However, this observed difference might just be due to random variation rather than a genuine difference in the number of drives. To determine if this difference is statistically significant, we should conduct a hypothesis test.
+
+Goal is to conduct a two-sample t-test. 
+
+Steps for conducting a hypothesis test:
+
+1.   State the null hypothesis and the alternative hypothesis
+2.   Choose a signficance level
+3.   Find the p-value
+4.   Reject or fail to reject the null hypothesis
