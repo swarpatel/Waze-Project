@@ -1954,4 +1954,4 @@ stats.ttest_ind(a=iPhone, b=Android, equal_var=False)
 
 
 
-> *Since the p-value is greater than the chosen significance level of 5%, we cannot reject the null hypothesis. This means we conclude that there is no statistically significant difference in the average number of drives between drivers using iPhones and those using Androids.*
+> **Since the p-value is greater than the chosen significance level of 5%, we cannot reject the null hypothesis. This means we conclude that there is no statistically significant difference in the average number of drives between drivers using iPhones and those using Androids.**
