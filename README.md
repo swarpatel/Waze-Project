@@ -1954,4 +1954,8 @@ stats.ttest_ind(a=iPhone, b=Android, equal_var=False)
 
 
 
-> **Since the p-value is greater than the chosen significance level of 5%, we cannot reject the null hypothesis. This means we conclude that there is no statistically significant difference in the average number of drives between drivers using iPhones and those using Androids.**
+**Since the p-value is greater than the chosen significance level of 5%, we cannot reject the null hypothesis. This means we conclude that there is no statistically significant difference in the average number of drives between drivers using iPhones and those using Androids.**
+
+The main business takeaway is that drivers using iPhones have, on average, a comparable number of drives to those using Androids. 
+
+A possible next step is to investigate other factors that might affect the variation in the number of drives and conduct additional hypothesis tests to gain deeper insights into user behavior. Additionally, implementing temporary changes in marketing strategies or the user interface for the Waze app could generate more data to further explore user retention.
