@@ -1922,3 +1922,36 @@ Steps for conducting a hypothesis test:
 2.   Choose a signficance level
 3.   Find the p-value
 4.   Reject or fail to reject the null hypothesis
+
+**Hypotheses:**
+
+$H_0$: There is no difference in average number of drives between drivers who use iPhone devices and drivers who use Androids.
+
+$H_A$: There is a difference in average number of drives between drivers who use iPhone devices and drivers who use Androids.
+
+**Significance level:** 5%
+
+1. Isolate the `drives` column for iPhone users.
+2. Isolate the `drives` column for Android users.
+3. Perform the t-test
+
+
+```python
+# 1. Isolate the `drives` column for iPhone users.
+iPhone = df[df['device_type'] == 1]['drives']
+
+# 2. Isolate the `drives` column for Android users.
+Android = df[df['device_type'] == 2]['drives']
+
+# 3. Perform the t-test
+stats.ttest_ind(a=iPhone, b=Android, equal_var=False)
+```
+
+
+
+
+    TtestResult(statistic=1.1643714136026293, pvalue=0.24429844267242218, df=11148.669519764011)
+
+
+
+> *Since the p-value is greater than the chosen significance level of 5%, we cannot reject the null hypothesis. This means we conclude that there is no statistically significant difference in the average number of drives between drivers using iPhones and those using Androids.*
