@@ -1853,3 +1853,9 @@ Additionally, exploratory data analysis has shown that users who drive very long
 6. Did newer users have greater representation in this dataset than users with longer tenure? How do you know?
 
    *No. Users of all tenures, from brand new to around 10 years, were relatively evenly represented in the data. This is supported by the histogram for `n_days_after_onboarding`, which shows a uniform distribution for this variable.*
+
+### Case Study
+
+Your team is nearing the midpoint of their user churn project. So far, you’ve completed a project proposal, and used Python to explore and analyze Waze’s user data. You’ve also used Python to create data visualizations. The next step is to use statistical methods to analyze and interpret your data.
+
+You receive a new email from Sylvester Esperanza, your project manager. Sylvester tells your team about a new request from leadership: to analyze the relationship between mean amount of rides and device type. You also discover follow-up emails from three other team members: May Santner, Chidi Ga, and Harriet Hadzic. These emails discuss the details of the analysis. They would like a statistical analysis of ride data based on device type. In particular, leadership wants to know if there is a statistically significant difference in mean amount of rides between iPhone® users and Android™ users. A final email from Chidi includes your specific assignment: to conduct a two-sample hypothesis test (t-test) to analyze the difference in the mean amount of rides between iPhone users and Android users.
