@@ -2634,3 +2634,994 @@ df1[['label', 'label2']].tail(10)
   </tbody>
 </table>
 </div>
+
+### **Determine whether assumptions have been met**
+
+The following are the assumptions for logistic regression:
+
+* Independent observations
+
+* No extreme outliers
+
+* Little to no multicollinearity among X predictors
+
+* Linear relationship between X and the **logit** of y
+
+For the first assumption, we can assume that observations are independent for this project.
+
+The second assumption has already been addressed.
+
+The last assumption will be verified after modeling.
+
+#### **Collinearity**
+
+Check the correlation among predictor variables. First, generate a correlation matrix.
+
+
+```python
+# Generate a correlation matrix
+df1_numeric = df1.select_dtypes(include=[float, int])
+df1_numeric.corr(method='pearson')
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>sessions</th>
+      <th>drives</th>
+      <th>total_sessions</th>
+      <th>n_days_after_onboarding</th>
+      <th>total_navigations_fav1</th>
+      <th>total_navigations_fav2</th>
+      <th>driven_km_drives</th>
+      <th>duration_minutes_drives</th>
+      <th>activity_days</th>
+      <th>driving_days</th>
+      <th>km_per_driving_day</th>
+      <th>professional_driver</th>
+      <th>label2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>sessions</th>
+      <td>1.000000</td>
+      <td>0.955159</td>
+      <td>0.590265</td>
+      <td>0.006441</td>
+      <td>0.002887</td>
+      <td>0.009018</td>
+      <td>0.003815</td>
+      <td>-0.002878</td>
+      <td>0.024594</td>
+      <td>0.020228</td>
+      <td>-0.008961</td>
+      <td>0.401584</td>
+      <td>0.038045</td>
+    </tr>
+    <tr>
+      <th>drives</th>
+      <td>0.955159</td>
+      <td>1.000000</td>
+      <td>0.565216</td>
+      <td>0.006940</td>
+      <td>0.001058</td>
+      <td>0.009505</td>
+      <td>0.003167</td>
+      <td>-0.003889</td>
+      <td>0.024357</td>
+      <td>0.019608</td>
+      <td>-0.010989</td>
+      <td>0.444425</td>
+      <td>0.035865</td>
+    </tr>
+    <tr>
+      <th>total_sessions</th>
+      <td>0.590265</td>
+      <td>0.565216</td>
+      <td>1.000000</td>
+      <td>0.006180</td>
+      <td>-0.000455</td>
+      <td>0.010337</td>
+      <td>0.001690</td>
+      <td>-0.001526</td>
+      <td>0.012932</td>
+      <td>0.009798</td>
+      <td>-0.015169</td>
+      <td>0.234289</td>
+      <td>0.025046</td>
+    </tr>
+    <tr>
+      <th>n_days_after_onboarding</th>
+      <td>0.006441</td>
+      <td>0.006940</td>
+      <td>0.006180</td>
+      <td>1.000000</td>
+      <td>-0.002450</td>
+      <td>-0.004968</td>
+      <td>-0.005056</td>
+      <td>-0.010167</td>
+      <td>-0.009418</td>
+      <td>-0.007321</td>
+      <td>0.011764</td>
+      <td>0.003770</td>
+      <td>-0.129263</td>
+    </tr>
+    <tr>
+      <th>total_navigations_fav1</th>
+      <td>0.002887</td>
+      <td>0.001058</td>
+      <td>-0.000455</td>
+      <td>-0.002450</td>
+      <td>1.000000</td>
+      <td>0.002866</td>
+      <td>-0.007473</td>
+      <td>0.005646</td>
+      <td>0.010902</td>
+      <td>0.010419</td>
+      <td>-0.000197</td>
+      <td>-0.000224</td>
+      <td>0.052322</td>
+    </tr>
+    <tr>
+      <th>total_navigations_fav2</th>
+      <td>0.009018</td>
+      <td>0.009505</td>
+      <td>0.010337</td>
+      <td>-0.004968</td>
+      <td>0.002866</td>
+      <td>1.000000</td>
+      <td>0.000531</td>
+      <td>-0.003009</td>
+      <td>-0.004425</td>
+      <td>0.002000</td>
+      <td>0.006751</td>
+      <td>0.007126</td>
+      <td>0.015032</td>
+    </tr>
+    <tr>
+      <th>driven_km_drives</th>
+      <td>0.003815</td>
+      <td>0.003167</td>
+      <td>0.001690</td>
+      <td>-0.005056</td>
+      <td>-0.007473</td>
+      <td>0.000531</td>
+      <td>1.000000</td>
+      <td>0.671921</td>
+      <td>-0.004196</td>
+      <td>-0.007099</td>
+      <td>0.355674</td>
+      <td>-0.002012</td>
+      <td>0.019050</td>
+    </tr>
+    <tr>
+      <th>duration_minutes_drives</th>
+      <td>-0.002878</td>
+      <td>-0.003889</td>
+      <td>-0.001526</td>
+      <td>-0.010167</td>
+      <td>0.005646</td>
+      <td>-0.003009</td>
+      <td>0.671921</td>
+      <td>1.000000</td>
+      <td>-0.007895</td>
+      <td>-0.009425</td>
+      <td>0.239627</td>
+      <td>-0.012128</td>
+      <td>0.040407</td>
+    </tr>
+    <tr>
+      <th>activity_days</th>
+      <td>0.024594</td>
+      <td>0.024357</td>
+      <td>0.012932</td>
+      <td>-0.009418</td>
+      <td>0.010902</td>
+      <td>-0.004425</td>
+      <td>-0.004196</td>
+      <td>-0.007895</td>
+      <td>1.000000</td>
+      <td>0.947687</td>
+      <td>-0.397433</td>
+      <td>0.453825</td>
+      <td>-0.303851</td>
+    </tr>
+    <tr>
+      <th>driving_days</th>
+      <td>0.020228</td>
+      <td>0.019608</td>
+      <td>0.009798</td>
+      <td>-0.007321</td>
+      <td>0.010419</td>
+      <td>0.002000</td>
+      <td>-0.007099</td>
+      <td>-0.009425</td>
+      <td>0.947687</td>
+      <td>1.000000</td>
+      <td>-0.407917</td>
+      <td>0.469776</td>
+      <td>-0.294259</td>
+    </tr>
+    <tr>
+      <th>km_per_driving_day</th>
+      <td>-0.008961</td>
+      <td>-0.010989</td>
+      <td>-0.015169</td>
+      <td>0.011764</td>
+      <td>-0.000197</td>
+      <td>0.006751</td>
+      <td>0.355674</td>
+      <td>0.239627</td>
+      <td>-0.397433</td>
+      <td>-0.407917</td>
+      <td>1.000000</td>
+      <td>-0.165966</td>
+      <td>0.148583</td>
+    </tr>
+    <tr>
+      <th>professional_driver</th>
+      <td>0.401584</td>
+      <td>0.444425</td>
+      <td>0.234289</td>
+      <td>0.003770</td>
+      <td>-0.000224</td>
+      <td>0.007126</td>
+      <td>-0.002012</td>
+      <td>-0.012128</td>
+      <td>0.453825</td>
+      <td>0.469776</td>
+      <td>-0.165966</td>
+      <td>1.000000</td>
+      <td>-0.122312</td>
+    </tr>
+    <tr>
+      <th>label2</th>
+      <td>0.038045</td>
+      <td>0.035865</td>
+      <td>0.025046</td>
+      <td>-0.129263</td>
+      <td>0.052322</td>
+      <td>0.015032</td>
+      <td>0.019050</td>
+      <td>0.040407</td>
+      <td>-0.303851</td>
+      <td>-0.294259</td>
+      <td>0.148583</td>
+      <td>-0.122312</td>
+      <td>1.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+```python
+# Plot correlation heatmap
+plt.figure(figsize=(15,10))
+sns.heatmap(df1_numeric.corr(method='pearson'), vmin=-1, vmax=1, annot=True, cmap='coolwarm')
+plt.title('Correlation heatmap indicates many low correlated variables',
+          fontsize=18)
+plt.show();
+```
+
+
+    
+![png](output_171_0.png)
+    
+
+
+If there are predictor variables that have a Pearson correlation coefficient value greater than the **absolute value of 0.7**, these variables are strongly multicollinear. Therefore, only one of these variables should be used in the model.
+
+> * *`sessions` and `drives`: 0.96*
+<br>
+> * *`driving_days` and `activity_days`: 0.95*
+
+### **Create dummies (if necessary)**
+
+We have selected `device` as an X variable, so we will need to create dummy variables since this variable is categorical.
+
+Because this dataset only has one remaining categorical feature (`device`), it's not necessary to use one of these special functions. We can just implement the transformation directly.
+
+Create a new, binary column called `device2` that encodes user devices as follows:
+
+* `Android` -> `0`
+* `iPhone` -> `1`
+
+
+```python
+# Create new `device2` variable
+df1['device2'] = np.where(df1['device']=='Android', 0, 1)
+df1[['device', 'device2']].tail()
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>device</th>
+      <th>device2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>14994</th>
+      <td>iPhone</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>14995</th>
+      <td>Android</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>14996</th>
+      <td>iPhone</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>14997</th>
+      <td>iPhone</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>14998</th>
+      <td>iPhone</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+### **Model building**
+
+#### **Assign predictor variables and target**
+
+Drop the following variables and assign the results to `X`:
+
+* `label` (this is the target)
+* `label2` (this is the target)
+* `device` (this is the non-binary-encoded categorical variable)
+* `sessions` (this had high multicollinearity)
+* `driving_days` (this had high multicollinearity)
+
+
+**Note:** `sessions` and `driving_days` were selected to be dropped, rather than `drives` and `activity_days` beacuase the features that were kept for modeling had slightly stronger correlations with the target variable than the features that were dropped.
+
+
+```python
+# Isolate predictor variables
+X = df1.drop(columns = ['label', 'label2', 'device', 'sessions', 'driving_days'])
+```
+
+Now, isolate the dependent (target) variable. Assign it to a variable called `y`.
+
+
+```python
+# Isolate target variable
+y = df1['label2']
+```
+
+#### **Split the data**
+
+**Note:** Because the target class is imbalanced (82% retained vs. 18% churned), we want to make sure that we don't get an unlucky split that over- or under-represents the frequency of the minority class. Set the function's `stratify` parameter to `y` to ensure that the minority class appears in both train and test sets in the same proportion that it does in the overall dataset.
+
+
+```python
+# Perform the train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, random_state=42)
+```
+
+
+```python
+X_train.head()
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>drives</th>
+      <th>total_sessions</th>
+      <th>n_days_after_onboarding</th>
+      <th>total_navigations_fav1</th>
+      <th>total_navigations_fav2</th>
+      <th>driven_km_drives</th>
+      <th>duration_minutes_drives</th>
+      <th>activity_days</th>
+      <th>km_per_driving_day</th>
+      <th>professional_driver</th>
+      <th>device2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>152</th>
+      <td>108</td>
+      <td>186.192746</td>
+      <td>3116</td>
+      <td>243</td>
+      <td>124</td>
+      <td>9184.587914</td>
+      <td>4668.180092</td>
+      <td>24</td>
+      <td>612.305861</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>11899</th>
+      <td>2</td>
+      <td>3.487590</td>
+      <td>794</td>
+      <td>114</td>
+      <td>18</td>
+      <td>3286.545691</td>
+      <td>1780.902733</td>
+      <td>5</td>
+      <td>3286.545691</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>10937</th>
+      <td>139</td>
+      <td>347.106403</td>
+      <td>331</td>
+      <td>4</td>
+      <td>7</td>
+      <td>7400.838975</td>
+      <td>2349.305267</td>
+      <td>15</td>
+      <td>616.736581</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>669</th>
+      <td>108</td>
+      <td>481.048448</td>
+      <td>2320</td>
+      <td>11</td>
+      <td>4</td>
+      <td>6566.424830</td>
+      <td>4558.459870</td>
+      <td>18</td>
+      <td>410.401552</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>8406</th>
+      <td>10</td>
+      <td>89.475821</td>
+      <td>2478</td>
+      <td>135</td>
+      <td>0</td>
+      <td>1271.248661</td>
+      <td>938.711572</td>
+      <td>27</td>
+      <td>74.779333</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+Use scikit-learn to instantiate a logistic regression model. Since your predictors are unscaled we will add the argument `penalty = None`.
+
+Fit the model on `X_train` and `y_train`.
+
+
+```python
+model = LogisticRegression(penalty= None, max_iter=400)
+
+model.fit(X_train, y_train)
+```
+
+
+
+
+<style>#sk-container-id-3 {
+  /* Definition of color scheme common for light and dark mode */
+  --sklearn-color-text: black;
+  --sklearn-color-line: gray;
+  /* Definition of color scheme for unfitted estimators */
+  --sklearn-color-unfitted-level-0: #fff5e6;
+  --sklearn-color-unfitted-level-1: #f6e4d2;
+  --sklearn-color-unfitted-level-2: #ffe0b3;
+  --sklearn-color-unfitted-level-3: chocolate;
+  /* Definition of color scheme for fitted estimators */
+  --sklearn-color-fitted-level-0: #f0f8ff;
+  --sklearn-color-fitted-level-1: #d4ebff;
+  --sklearn-color-fitted-level-2: #b3dbfd;
+  --sklearn-color-fitted-level-3: cornflowerblue;
+
+  /* Specific color for light theme */
+  --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, white)));
+  --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-icon: #696969;
+
+  @media (prefers-color-scheme: dark) {
+    /* Redefinition of color scheme for dark theme */
+    --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, #111)));
+    --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-icon: #878787;
+  }
+}
+
+#sk-container-id-3 {
+  color: var(--sklearn-color-text);
+}
+
+#sk-container-id-3 pre {
+  padding: 0;
+}
+
+#sk-container-id-3 input.sk-hidden--visually {
+  border: 0;
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+#sk-container-id-3 div.sk-dashed-wrapped {
+  border: 1px dashed var(--sklearn-color-line);
+  margin: 0 0.4em 0.5em 0.4em;
+  box-sizing: border-box;
+  padding-bottom: 0.4em;
+  background-color: var(--sklearn-color-background);
+}
+
+#sk-container-id-3 div.sk-container {
+  /* jupyter's `normalize.less` sets `[hidden] { display: none; }`
+     but bootstrap.min.css set `[hidden] { display: none !important; }`
+     so we also need the `!important` here to be able to override the
+     default hidden behavior on the sphinx rendered scikit-learn.org.
+     See: https://github.com/scikit-learn/scikit-learn/issues/21755 */
+  display: inline-block !important;
+  position: relative;
+}
+
+#sk-container-id-3 div.sk-text-repr-fallback {
+  display: none;
+}
+
+div.sk-parallel-item,
+div.sk-serial,
+div.sk-item {
+  /* draw centered vertical line to link estimators */
+  background-image: linear-gradient(var(--sklearn-color-text-on-default-background), var(--sklearn-color-text-on-default-background));
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+/* Parallel-specific style estimator block */
+
+#sk-container-id-3 div.sk-parallel-item::after {
+  content: "";
+  width: 100%;
+  border-bottom: 2px solid var(--sklearn-color-text-on-default-background);
+  flex-grow: 1;
+}
+
+#sk-container-id-3 div.sk-parallel {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background-color: var(--sklearn-color-background);
+  position: relative;
+}
+
+#sk-container-id-3 div.sk-parallel-item {
+  display: flex;
+  flex-direction: column;
+}
+
+#sk-container-id-3 div.sk-parallel-item:first-child::after {
+  align-self: flex-end;
+  width: 50%;
+}
+
+#sk-container-id-3 div.sk-parallel-item:last-child::after {
+  align-self: flex-start;
+  width: 50%;
+}
+
+#sk-container-id-3 div.sk-parallel-item:only-child::after {
+  width: 0;
+}
+
+/* Serial-specific style estimator block */
+
+#sk-container-id-3 div.sk-serial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--sklearn-color-background);
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+
+/* Toggleable style: style used for estimator/Pipeline/ColumnTransformer box that is
+clickable and can be expanded/collapsed.
+- Pipeline and ColumnTransformer use this feature and define the default style
+- Estimators will overwrite some part of the style using the `sk-estimator` class
+*/
+
+/* Pipeline and ColumnTransformer style (default) */
+
+#sk-container-id-3 div.sk-toggleable {
+  /* Default theme specific background. It is overwritten whether we have a
+  specific estimator or a Pipeline/ColumnTransformer */
+  background-color: var(--sklearn-color-background);
+}
+
+/* Toggleable label */
+#sk-container-id-3 label.sk-toggleable__label {
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  margin-bottom: 0;
+  padding: 0.5em;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#sk-container-id-3 label.sk-toggleable__label-arrow:before {
+  /* Arrow on the left of the label */
+  content: "▸";
+  float: left;
+  margin-right: 0.25em;
+  color: var(--sklearn-color-icon);
+}
+
+#sk-container-id-3 label.sk-toggleable__label-arrow:hover:before {
+  color: var(--sklearn-color-text);
+}
+
+/* Toggleable content - dropdown */
+
+#sk-container-id-3 div.sk-toggleable__content {
+  max-height: 0;
+  max-width: 0;
+  overflow: hidden;
+  text-align: left;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-3 div.sk-toggleable__content.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-3 div.sk-toggleable__content pre {
+  margin: 0.2em;
+  border-radius: 0.25em;
+  color: var(--sklearn-color-text);
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-3 div.sk-toggleable__content.fitted pre {
+  /* unfitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-3 input.sk-toggleable__control:checked~div.sk-toggleable__content {
+  /* Expand drop-down */
+  max-height: 200px;
+  max-width: 100%;
+  overflow: auto;
+}
+
+#sk-container-id-3 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {
+  content: "▾";
+}
+
+/* Pipeline/ColumnTransformer-specific style */
+
+#sk-container-id-3 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-3 div.sk-label.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator-specific style */
+
+/* Colorize estimator box */
+#sk-container-id-3 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-3 div.sk-estimator.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+#sk-container-id-3 div.sk-label label.sk-toggleable__label,
+#sk-container-id-3 div.sk-label label {
+  /* The background is the default theme color */
+  color: var(--sklearn-color-text-on-default-background);
+}
+
+/* On hover, darken the color of the background */
+#sk-container-id-3 div.sk-label:hover label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+/* Label box, darken color on hover, fitted */
+#sk-container-id-3 div.sk-label.fitted:hover label.sk-toggleable__label.fitted {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator label */
+
+#sk-container-id-3 div.sk-label label {
+  font-family: monospace;
+  font-weight: bold;
+  display: inline-block;
+  line-height: 1.2em;
+}
+
+#sk-container-id-3 div.sk-label-container {
+  text-align: center;
+}
+
+/* Estimator-specific */
+#sk-container-id-3 div.sk-estimator {
+  font-family: monospace;
+  border: 1px dotted var(--sklearn-color-border-box);
+  border-radius: 0.25em;
+  box-sizing: border-box;
+  margin-bottom: 0.5em;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-3 div.sk-estimator.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+/* on hover */
+#sk-container-id-3 div.sk-estimator:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-3 div.sk-estimator.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Specification for estimator info (e.g. "i" and "?") */
+
+/* Common style for "i" and "?" */
+
+.sk-estimator-doc-link,
+a:link.sk-estimator-doc-link,
+a:visited.sk-estimator-doc-link {
+  float: right;
+  font-size: smaller;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1em;
+  height: 1em;
+  width: 1em;
+  text-decoration: none !important;
+  margin-left: 1ex;
+  /* unfitted */
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-1);
+}
+
+.sk-estimator-doc-link.fitted,
+a:link.sk-estimator-doc-link.fitted,
+a:visited.sk-estimator-doc-link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+div.sk-estimator:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover,
+div.sk-label-container:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+div.sk-estimator.fitted:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover,
+div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+/* Span, style for the box shown on hovering the info icon */
+.sk-estimator-doc-link span {
+  display: none;
+  z-index: 9999;
+  position: relative;
+  font-weight: normal;
+  right: .2ex;
+  padding: .5ex;
+  margin: .5ex;
+  width: min-content;
+  min-width: 20ex;
+  max-width: 50ex;
+  color: var(--sklearn-color-text);
+  box-shadow: 2pt 2pt 4pt #999;
+  /* unfitted */
+  background: var(--sklearn-color-unfitted-level-0);
+  border: .5pt solid var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted span {
+  /* fitted */
+  background: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3);
+}
+
+.sk-estimator-doc-link:hover span {
+  display: block;
+}
+
+/* "?"-specific style due to the `<a>` HTML tag */
+
+#sk-container-id-3 a.estimator_doc_link {
+  float: right;
+  font-size: 1rem;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1rem;
+  height: 1rem;
+  width: 1rem;
+  text-decoration: none;
+  /* unfitted */
+  color: var(--sklearn-color-unfitted-level-1);
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+}
+
+#sk-container-id-3 a.estimator_doc_link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+#sk-container-id-3 a.estimator_doc_link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+#sk-container-id-3 a.estimator_doc_link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+}
+</style><div id="sk-container-id-3" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>LogisticRegression(max_iter=400, penalty=None)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item"><div class="sk-estimator fitted sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-3" type="checkbox" checked><label for="sk-estimator-id-3" class="sk-toggleable__label fitted sk-toggleable__label-arrow fitted">&nbsp;&nbsp;LogisticRegression<a class="sk-estimator-doc-link fitted" rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.linear_model.LogisticRegression.html">?<span>Documentation for LogisticRegression</span></a><span class="sk-estimator-doc-link fitted">i<span>Fitted</span></span></label><div class="sk-toggleable__content fitted"><pre>LogisticRegression(max_iter=400, penalty=None)</pre></div> </div></div></div></div>
+
+
+
+Call the `.coef_` attribute on the model to get the coefficients of each variable.  The coefficients are in order of how the variables are listed in the dataset.  Coefficients represent the change in the **log odds** of the target variable for **every one unit increase in X**.
+
+
+```python
+pd.Series(model.coef_[0], index=X.columns)
+```
+
+
+
+
+    drives                     0.002002
+    total_sessions             0.000285
+    n_days_after_onboarding   -0.000401
+    total_navigations_fav1     0.001255
+    total_navigations_fav2     0.000995
+    driven_km_drives          -0.000009
+    duration_minutes_drives    0.000106
+    activity_days             -0.105294
+    km_per_driving_day         0.000019
+    professional_driver       -0.006518
+    device2                    0.021656
+    dtype: float64
+
+
+
+Call the model's `intercept_` attribute to get the intercept of the model.
+
+
+```python
+model.intercept_
+```
+
+
+
+
+    array([-0.06043083])
