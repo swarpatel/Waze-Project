@@ -2345,3 +2345,292 @@ Because we know from previous EDA that there is no evidence of a non-random caus
 # Drop rows with missing data in `label` column
 df1 = df1.dropna(subset=['label'])
 ```
+
+#### **Impute outliers**
+
+At times outliers can be changed to the **median, mean, 95th percentile, etc.**
+
+Previously, we determined that seven of the variables had clear signs of containing outliers:
+
+* `sessions`
+* `drives`
+* `total_sessions`
+* `total_navigations_fav1`
+* `total_navigations_fav2`
+* `driven_km_drives`
+* `duration_minutes_drives`
+
+For this analysis, impute the outlying values for these columns by calculat the **95th percentile** of each column and remove any value in the column that exceeds it.
+
+
+```python
+# Impute outliers
+for column in ['sessions', 'drives', 'total_sessions', 'total_navigations_fav1',
+               'total_navigations_fav2', 'driven_km_drives', 'duration_minutes_drives']:
+    threshold = df1[column].quantile(0.95)
+    df1.loc[df[column] > threshold, column] = threshold
+```
+
+
+```python
+df1.describe()
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>sessions</th>
+      <th>drives</th>
+      <th>total_sessions</th>
+      <th>n_days_after_onboarding</th>
+      <th>total_navigations_fav1</th>
+      <th>total_navigations_fav2</th>
+      <th>driven_km_drives</th>
+      <th>duration_minutes_drives</th>
+      <th>activity_days</th>
+      <th>driving_days</th>
+      <th>km_per_driving_day</th>
+      <th>professional_driver</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>14299.000000</td>
+      <td>14299.000000</td>
+      <td>14299.000000</td>
+      <td>14299.000000</td>
+      <td>14299.000000</td>
+      <td>14299.000000</td>
+      <td>14299.000000</td>
+      <td>14299.000000</td>
+      <td>14299.000000</td>
+      <td>14299.000000</td>
+      <td>14299.000000</td>
+      <td>14299.000000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>80.623820</td>
+      <td>63.964683</td>
+      <td>189.547409</td>
+      <td>1751.822505</td>
+      <td>114.562767</td>
+      <td>27.187216</td>
+      <td>4044.401535</td>
+      <td>1792.911210</td>
+      <td>15.544653</td>
+      <td>12.182530</td>
+      <td>581.942399</td>
+      <td>0.173998</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>80.736502</td>
+      <td>55.127927</td>
+      <td>136.189764</td>
+      <td>1008.663834</td>
+      <td>124.378550</td>
+      <td>36.715302</td>
+      <td>2504.977970</td>
+      <td>1224.329759</td>
+      <td>9.016088</td>
+      <td>7.833835</td>
+      <td>1038.254509</td>
+      <td>0.379121</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.220211</td>
+      <td>4.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>60.441250</td>
+      <td>18.282082</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>23.000000</td>
+      <td>20.000000</td>
+      <td>90.457733</td>
+      <td>878.500000</td>
+      <td>10.000000</td>
+      <td>0.000000</td>
+      <td>2217.319909</td>
+      <td>840.181344</td>
+      <td>8.000000</td>
+      <td>5.000000</td>
+      <td>136.168003</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>56.000000</td>
+      <td>48.000000</td>
+      <td>158.718571</td>
+      <td>1749.000000</td>
+      <td>71.000000</td>
+      <td>9.000000</td>
+      <td>3496.545617</td>
+      <td>1479.394387</td>
+      <td>16.000000</td>
+      <td>12.000000</td>
+      <td>273.301012</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>111.000000</td>
+      <td>93.000000</td>
+      <td>253.540450</td>
+      <td>2627.500000</td>
+      <td>178.000000</td>
+      <td>43.000000</td>
+      <td>5299.972162</td>
+      <td>2466.928876</td>
+      <td>23.000000</td>
+      <td>19.000000</td>
+      <td>558.018761</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>743.000000</td>
+      <td>200.000000</td>
+      <td>1216.154633</td>
+      <td>3500.000000</td>
+      <td>422.000000</td>
+      <td>124.000000</td>
+      <td>21183.401890</td>
+      <td>4668.180092</td>
+      <td>31.000000</td>
+      <td>30.000000</td>
+      <td>15420.234110</td>
+      <td>1.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+#### **Encode categorical variables**
+
+Change the data type of the `label` column to be binary. This change is needed to train a logistic regression model.
+
+Assign a `0` for all `retained` users.
+
+Assign a `1` for all `churned` users.
+
+Save this variable as `label2` as to not overwrite the original `label` variable.
+
+
+```python
+# Create binary `label2` column
+df1['label2'] = np.where(df1['label']=='churned', 1, 0)
+df1[['label', 'label2']].tail(10)
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>label</th>
+      <th>label2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>14988</th>
+      <td>churned</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>14989</th>
+      <td>retained</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>14990</th>
+      <td>churned</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>14991</th>
+      <td>churned</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>14992</th>
+      <td>retained</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>14994</th>
+      <td>retained</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>14995</th>
+      <td>retained</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>14996</th>
+      <td>retained</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>14997</th>
+      <td>churned</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>14998</th>
+      <td>retained</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
