@@ -3138,3 +3138,231 @@ model.intercept_
 
 
     array([-0.06043083])
+
+#### **Check final assumption**
+
+Verify the linear relationship between X and the estimated log odds (known as logits) by making a regplot.
+
+Call the model's `predict_proba()` method to generate the probability of response for each sample in the training data. (The training data is the argument to the method.) Assign the result to a variable called `training_probabilities`. This results in a 2-D array where each row represents a user in `X_train`. The first column is the probability of the user not churning, and the second column is the probability of the user churning.
+
+
+```python
+# Get the predicted probabilities of the training data
+training_probabilities = model.predict_proba(X_train)
+training_probabilities
+```
+
+
+
+
+    array([[0.93670023, 0.06329977],
+           [0.62136287, 0.37863713],
+           [0.76589523, 0.23410477],
+           ...,
+           [0.91749065, 0.08250935],
+           [0.8469825 , 0.1530175 ],
+           [0.93321157, 0.06678843]])
+
+
+
+In logistic regression, the relationship between a predictor variable and the dependent variable does not need to be linear, however, the log-odds (a.k.a., logit) of the dependent variable with respect to the predictor variable should be linear. Here is the formula for calculating log-odds, where _p_ is the probability of response:
+<br>
+$$
+logit(p) = ln(\frac{p}{1-p})
+$$
+<br>
+
+1. Create a dataframe called `logit_data` that is a copy of `df`.
+
+2. Create a new column called `logit` in the `logit_data` dataframe. The data in this column should represent the logit for each user.
+
+
+
+```python
+# 1. Copy the `X_train` dataframe and assign to `logit_data`
+logit_data = X_train.copy()
+
+# 2. Create a new `logit` column in the `logit_data` dataframe
+logit_data['logit'] = [np.log(prob[1] / prob[0]) for prob in training_probabilities]
+```
+
+Plot a regplot where the x-axis represents an independent variable and the y-axis represents the log-odds of the predicted probabilities.
+
+
+```python
+# Plot regplot of `activity_days` log-odds
+sns.regplot(x='activity_days', y='logit', data=logit_data, scatter_kws={'s': 2, 'alpha': 0.5})
+plt.title('Log-odds: activity_days');
+```
+
+
+    
+![png](output_194_0.png)
+    
+
+
+### **Task 4a. Results and evaluation**
+
+If the logistic assumptions are met, the model results can be appropriately interpreted.
+
+
+```python
+# Generate predictions on X_test
+y_preds = model.predict(X_test)
+```
+
+Now, use the `score()` method on the model with `X_test` and `y_test` as its two arguments. The default score in scikit-learn is **accuracy**.
+
+
+```python
+# Score the model (accuracy) on the test data
+model.score(X_test, y_test)
+```
+
+
+
+
+    0.8246153846153846
+
+
+
+### **Show results with a confusion matrix**
+
+Use the `confusion_matrix` function to obtain a confusion matrix. Use `y_test` and `y_preds` as arguments.
+
+
+```python
+cm = confusion_matrix(y_test, y_preds)
+
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, 
+                              display_labels=['retained', 'churned'],
+                              )
+disp.plot();
+```
+
+
+    
+![png](output_200_0.png)
+    
+
+
+Use the confusion matrix to compute precision and recall manually.
+
+
+```python
+# Calculate precision manually
+precision = cm[1,1] / (cm[0, 1] + cm[1, 1])
+precision
+```
+
+
+
+
+    0.5321100917431193
+
+
+
+
+```python
+# Calculate recall manually
+recall = cm[1,1] / (cm[1, 0] + cm[1, 1])
+recall
+```
+
+
+
+
+    0.0914826498422713
+
+
+
+
+```python
+# Create a classification report
+target_labels = ['retained', 'churned']
+print(classification_report(y_test, y_preds, target_names=target_labels))
+```
+
+                  precision    recall  f1-score   support
+    
+        retained       0.83      0.98      0.90      2941
+         churned       0.53      0.09      0.16       634
+    
+        accuracy                           0.82      3575
+       macro avg       0.68      0.54      0.53      3575
+    weighted avg       0.78      0.82      0.77      3575
+    
+    
+
+Bar graph of the model's coefficients for a visual representation of the importance of the model's features.
+
+
+```python
+# Create a list of (column_name, coefficient) tuples
+feature_importance = list(zip(X_train.columns, model.coef_[0]))
+
+# Sort the list by coefficient value
+feature_importance = sorted(feature_importance, key=lambda x: x[1], reverse=True)
+feature_importance
+```
+
+
+
+
+    [('device2', 0.021656246457172026),
+     ('drives', 0.0020023201193281677),
+     ('total_navigations_fav1', 0.001254923502377065),
+     ('total_navigations_fav2', 0.000995152237747289),
+     ('total_sessions', 0.00028547567689226965),
+     ('duration_minutes_drives', 0.00010616341455489243),
+     ('km_per_driving_day', 1.856877212282823e-05),
+     ('driven_km_drives', -8.521383665381536e-06),
+     ('n_days_after_onboarding', -0.0004006983324141587),
+     ('professional_driver', -0.006518183308674796),
+     ('activity_days', -0.10529401770155794)]
+
+
+
+
+```python
+# Plot the feature importances
+sns.barplot(x=[x[1] for x in feature_importance],
+            y=[x[0] for x in feature_importance],
+            orient='h')
+plt.title('Feature importance');
+```
+
+
+    
+![png](output_207_0.png)
+    
+
+
+### **Conclusion**
+
+**Questions:**
+
+
+1. What variable most influenced the model's prediction? How? Was this surprising?
+
+> _`activity_days` was by far the most important feature in the model. It had a negative correlation with user churn. This was not surprising, as this variable was very strongly correlated with `driving_days`, which was known from EDA to have a negative correlation with churn._
+
+2. Were there any variables that you expected to be stronger predictors than they were?
+
+> _Yes. In previous EDA, user churn rate increased as the values in `km_per_driving_day` increased. The correlation heatmap here in this notebook revealed this variable to have the strongest positive correlation with churn of any of the predictor variables by a relatively large margin. In the model, it was the second-least-important variable._
+
+3. Why might a variable you thought to be important not be important in the model?
+
+> _In a multiple logistic regression model, features can interact with each other and these interactions can result in seemingly counterintuitive relationships. This is both a strength and a weakness of predictive models, as capturing these interactions typically makes a model more predictive while at the same time making the model more difficult to explain._
+
+4. Would you recommend that Waze use this model? Why or why not?
+
+> _It depends. What would the model be used for? If it's used to drive consequential business decisions, then no. The model is not a strong enough predictor, as made clear by its poor recall score. However, if the model is only being used to guide further exploratory efforts, then it can have value._
+
+5. What could you do to improve this model?
+
+> _New features could be engineered to try to generate better predictive signal, as they often do if you have domain knowledge. In the case of this model, one of the engineered features (`professional_driver`) was the third-most-predictive predictor. It could also be helpful to scale the predictor variables, and/or to reconstruct the model with different combinations of predictor variables to reduce noise from unpredictive features._
+
+6. What additional features would you like to have to help improve the model?
+
+> _It would be helpful to have drive-level information for each user (such as drive times, geographic locations, etc.). It would probably also be helpful to have more granular data to know how users interact with the app. For example, how often do they report or confirm road hazard alerts? Finally, it could be helpful to know the monthly count of unique starting and ending locations each driver inputs._
