@@ -3197,7 +3197,7 @@ plt.title('Log-odds: activity_days');
 
 
     
-![png](output_194_0.png)
+![png](img/output_194_0.png)
     
 
 
@@ -3242,7 +3242,7 @@ disp.plot();
 
 
     
-![png](output_200_0.png)
+![png](img/output_200_0.png)
     
 
 
@@ -3334,7 +3334,7 @@ plt.title('Feature importance');
 
 
     
-![png](output_207_0.png)
+![png](img/output_207_0.png)
     
 
 
