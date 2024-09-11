@@ -1960,7 +1960,7 @@ The main business takeaway is that drivers using iPhones have, on average, a com
 
 A possible next step is to investigate other factors that might affect the variation in the number of drives and conduct additional hypothesis tests to gain deeper insights into user behavior. Additionally, implementing temporary changes in marketing strategies or the user interface for the Waze app could generate more data to further explore user retention.
 
-### **Regression analysis: Simplify complex data relationships**
+# **Regression analysis: Simplify complex data relationships**
 
 #### **Build a regression model**
 
