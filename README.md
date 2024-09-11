@@ -1959,3 +1959,389 @@ stats.ttest_ind(a=iPhone, b=Android, equal_var=False)
 The main business takeaway is that drivers using iPhones have, on average, a comparable number of drives to those using Androids. 
 
 A possible next step is to investigate other factors that might affect the variation in the number of drives and conduct additional hypothesis tests to gain deeper insights into user behavior. Additionally, implementing temporary changes in marketing strategies or the user interface for the Waze app could generate more data to further explore user retention.
+
+### **Regression analysis: Simplify complex data relationships**
+
+#### **Build a regression model**
+
+**Importing libraries for Refression analysis**
+
+
+```python
+# Packages for Logistic Regression & Confusion Matrix
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report, accuracy_score, precision_score, \
+recall_score, f1_score, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.linear_model import LogisticRegression
+
+```
+
+
+```python
+# Load dataset into dataframe
+df1 = pd.read_csv('waze_dataset.csv')
+```
+
+*Outliers and extreme data values can significantly impact logistic regression models. After visualizing data, make a plan for addressing outliers by dropping rows, substituting extreme data with average data, and/or removing data values greater than 3 standard deviations.*
+
+
+```python
+print(df1.shape)
+
+df1.info()
+```
+
+    (14999, 13)
+    <class 'pandas.core.frame.DataFrame'>
+    RangeIndex: 14999 entries, 0 to 14998
+    Data columns (total 13 columns):
+     #   Column                   Non-Null Count  Dtype  
+    ---  ------                   --------------  -----  
+     0   ID                       14999 non-null  int64  
+     1   label                    14299 non-null  object 
+     2   sessions                 14999 non-null  int64  
+     3   drives                   14999 non-null  int64  
+     4   total_sessions           14999 non-null  float64
+     5   n_days_after_onboarding  14999 non-null  int64  
+     6   total_navigations_fav1   14999 non-null  int64  
+     7   total_navigations_fav2   14999 non-null  int64  
+     8   driven_km_drives         14999 non-null  float64
+     9   duration_minutes_drives  14999 non-null  float64
+     10  activity_days            14999 non-null  int64  
+     11  driving_days             14999 non-null  int64  
+     12  device                   14999 non-null  object 
+    dtypes: float64(3), int64(8), object(2)
+    memory usage: 1.5+ MB
+    
+
+
+```python
+# Remove the `ID` column
+df1 = df1.drop('ID', axis=1) 
+```
+
+Now, check the class balance of the dependent (target) variable, `label`.
+
+
+```python
+df1['label'].value_counts(normalize=True)
+```
+
+
+
+
+    label
+    retained    0.822645
+    churned     0.177355
+    Name: proportion, dtype: float64
+
+
+
+
+```python
+df1.describe()
+```
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>sessions</th>
+      <th>drives</th>
+      <th>total_sessions</th>
+      <th>n_days_after_onboarding</th>
+      <th>total_navigations_fav1</th>
+      <th>total_navigations_fav2</th>
+      <th>driven_km_drives</th>
+      <th>duration_minutes_drives</th>
+      <th>activity_days</th>
+      <th>driving_days</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>14999.000000</td>
+      <td>14999.000000</td>
+      <td>14999.000000</td>
+      <td>14999.000000</td>
+      <td>14999.000000</td>
+      <td>14999.000000</td>
+      <td>14999.000000</td>
+      <td>14999.000000</td>
+      <td>14999.000000</td>
+      <td>14999.000000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>80.633776</td>
+      <td>67.281152</td>
+      <td>189.964447</td>
+      <td>1749.837789</td>
+      <td>121.605974</td>
+      <td>29.672512</td>
+      <td>4039.340921</td>
+      <td>1860.976012</td>
+      <td>15.537102</td>
+      <td>12.179879</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>80.699065</td>
+      <td>65.913872</td>
+      <td>136.405128</td>
+      <td>1008.513876</td>
+      <td>148.121544</td>
+      <td>45.394651</td>
+      <td>2502.149334</td>
+      <td>1446.702288</td>
+      <td>9.004655</td>
+      <td>7.824036</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.220211</td>
+      <td>4.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>60.441250</td>
+      <td>18.282082</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>23.000000</td>
+      <td>20.000000</td>
+      <td>90.661156</td>
+      <td>878.000000</td>
+      <td>9.000000</td>
+      <td>0.000000</td>
+      <td>2212.600607</td>
+      <td>835.996260</td>
+      <td>8.000000</td>
+      <td>5.000000</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>56.000000</td>
+      <td>48.000000</td>
+      <td>159.568115</td>
+      <td>1741.000000</td>
+      <td>71.000000</td>
+      <td>9.000000</td>
+      <td>3493.858085</td>
+      <td>1478.249859</td>
+      <td>16.000000</td>
+      <td>12.000000</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>112.000000</td>
+      <td>93.000000</td>
+      <td>254.192341</td>
+      <td>2623.500000</td>
+      <td>178.000000</td>
+      <td>43.000000</td>
+      <td>5289.861262</td>
+      <td>2464.362632</td>
+      <td>23.000000</td>
+      <td>19.000000</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>743.000000</td>
+      <td>596.000000</td>
+      <td>1216.154633</td>
+      <td>3500.000000</td>
+      <td>1236.000000</td>
+      <td>415.000000</td>
+      <td>21183.401890</td>
+      <td>15851.727160</td>
+      <td>31.000000</td>
+      <td>30.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+*Following columns all seem to have outliers:*
+<br>
+* `sessions`
+* `drives`
+* `total_sessions`
+* `total_navigations_fav1`
+* `total_navigations_fav2`
+* `driven_km_drives`
+* `duration_minutes_drives`
+
+
+*All of these columns have max values that are multiple standard deviations above the 75th percentile. This could indicate outliers in these variables.*
+
+### **Create features**
+
+Create features that may be of interest to the stakeholder and/or that are needed to address the business scenario/problem.
+
+#### **`km_per_driving_day`**
+
+We know from earlier EDA that churn rate correlates with distance driven per driving day in the last month. It might be helpful to engineer a feature that captures this information.
+
+1. Create a new column in `df` called `km_per_driving_day`, which represents the mean distance driven per driving day for each user.
+
+2. Call the `describe()` method on the new column.
+
+
+```python
+# 1. Create `km_per_driving_day` column
+df1['km_per_driving_day'] = df1['driven_km_drives'] / df1['driving_days']
+
+# 2. Call `describe()` on the new column
+df1['km_per_driving_day'].describe()
+```
+
+
+
+
+    count    1.499900e+04
+    mean              inf
+    std               NaN
+    min      3.022063e+00
+    25%      1.672804e+02
+    50%      3.231459e+02
+    75%      7.579257e+02
+    max               inf
+    Name: km_per_driving_day, dtype: float64
+
+
+
+Note that some values are infinite. This is the result of there being values of zero in the `driving_days` column. Pandas imputes a value of infinity in the corresponding rows of the new column because division by zero is undefined.
+
+1. Convert these values from infinity to zero. You can use `np.inf` to refer to a value of infinity.
+
+2. Call `describe()` on the `km_per_driving_day` column to verify that it worked.
+
+
+```python
+# 1. Convert infinite values to zero
+df1.loc[df1['km_per_driving_day'] == np.inf, 'km_per_driving_day'] = 0
+
+# 2. Confirm that it worked
+df1['km_per_driving_day'].describe()
+```
+
+
+
+
+    count    14999.000000
+    mean       578.963113
+    std       1030.094384
+    min          0.000000
+    25%        136.238895
+    50%        272.889272
+    75%        558.686918
+    max      15420.234110
+    Name: km_per_driving_day, dtype: float64
+
+
+
+#### **`professional_driver`**
+
+Create a new, binary feature called `professional_driver` that is a 1 for users who had 60 or more drives <u>**and**</u> drove on 15+ days in the last month.
+
+**Note:** The objective is to create a new feature that separates professional drivers from other drivers. In this scenario, domain knowledge and intuition are used to determine these deciding thresholds, but ultimately they are arbitrary.
+
+
+```python
+# Create `professional_driver` column
+df1['professional_driver'] = np.where((df1['drives'] >= 60) & (df1['driving_days'] >= 15), 1, 0)
+
+# 1. Check count of professionals and non-professionals
+print(df1['professional_driver'].value_counts())
+
+# 2. Check in-class churn rate
+df1.groupby(['professional_driver'])['label'].value_counts(normalize=True)
+```
+
+    professional_driver
+    0    12405
+    1     2594
+    Name: count, dtype: int64
+    
+
+
+
+
+    professional_driver  label   
+    0                    retained    0.801202
+                         churned     0.198798
+    1                    retained    0.924437
+                         churned     0.075563
+    Name: proportion, dtype: float64
+
+
+
+The churn rate for professional drivers is 7.6%, while the churn rate for non-professionals is 19.9%. This seems like it could add predictive signal to the model.
+
+*Initially, columns were dropped based on high multicollinearity. Later, variable selection can be fine-tuned by running and rerunning models to look at changes in accuracy, recall, and precision.*
+<br></br>
+*Initial variable selection was based on the business objective and insights from prior EDA.*
+
+### **Preparing variables**
+
+
+```python
+df1.info()
+```
+
+    <class 'pandas.core.frame.DataFrame'>
+    RangeIndex: 14999 entries, 0 to 14998
+    Data columns (total 14 columns):
+     #   Column                   Non-Null Count  Dtype  
+    ---  ------                   --------------  -----  
+     0   label                    14299 non-null  object 
+     1   sessions                 14999 non-null  int64  
+     2   drives                   14999 non-null  int64  
+     3   total_sessions           14999 non-null  float64
+     4   n_days_after_onboarding  14999 non-null  int64  
+     5   total_navigations_fav1   14999 non-null  int64  
+     6   total_navigations_fav2   14999 non-null  int64  
+     7   driven_km_drives         14999 non-null  float64
+     8   duration_minutes_drives  14999 non-null  float64
+     9   activity_days            14999 non-null  int64  
+     10  driving_days             14999 non-null  int64  
+     11  device                   14999 non-null  object 
+     12  km_per_driving_day       14999 non-null  float64
+     13  professional_driver      14999 non-null  int32  
+    dtypes: float64(4), int32(1), int64(7), object(2)
+    memory usage: 1.5+ MB
+    
+
+Because we know from previous EDA that there is no evidence of a non-random cause of the 700 missing values in the `label` column, and because these observations comprise less than 5% of the data, use the `dropna()` method to drop the rows that are missing this data.
+
+
+```python
+# Drop rows with missing data in `label` column
+df1 = df1.dropna(subset=['label'])
+```
