@@ -3167,9 +3167,9 @@ training_probabilities
 
 In logistic regression, the relationship between a predictor variable and the dependent variable does not need to be linear, however, the log-odds (a.k.a., logit) of the dependent variable with respect to the predictor variable should be linear. Here is the formula for calculating log-odds, where _p_ is the probability of response:
 <br>
-$$
+
 logit(p) = ln(\frac{p}{1-p})
-$$
+
 <br>
 
 1. Create a dataframe called `logit_data` that is a copy of `df`.
